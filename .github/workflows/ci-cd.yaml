@@ -16,6 +16,7 @@ jobs:
             aws-function: RedirectUrlShortener
             filename: RedirectUrlShortener-1.0-SNAPSHOT.jar
     runs-on: ubuntu-latest
+    environment: prod
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
