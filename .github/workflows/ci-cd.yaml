@@ -1,0 +1,34 @@
+name: AWS Lambda CICD
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy-lambdas:
+    strategy:
+      matrix:
+        config:
+          - name: Generate Shortner Url
+            function: GenerateShortnerUrl
+            filename: CreateUrlLambda-1.0-SNAPSHOT.jar
+          - name: Redirect Url Shortener
+            function: RedirectUrlShortener
+            filename: RedirectUrlShortener-1.0-SNAPSHOT.jar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build Project
+        run: mvn clean package
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+      - name: Update Lambda Function    
+        run: aws lambda update-function-code --function-name ${{matrix.config.function}} --zip-file fileb://target/${{matrix.config.filename}}
