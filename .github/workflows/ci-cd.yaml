@@ -25,7 +25,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Build Project
-        working-directory: /${{matrix.config.project-folder-name}}
+        working-directory: ./${{matrix.config.project-folder-name}}
         run: mvn clean package
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
