@@ -8,10 +8,12 @@ jobs:
       matrix:
         config:
           - name: Generate Shortner Url
-            function: GenerateShortnerUrl
+            project-folder-name: CreateUrlLambda
+            aws-function: GenerateShortnerUrl
             filename: CreateUrlLambda-1.0-SNAPSHOT.jar
           - name: Redirect Url Shortener
-            function: RedirectUrlShortener
+            project-folder-name: RedirectUrlShortener
+            aws-function: RedirectUrlShortener
             filename: RedirectUrlShortener-1.0-SNAPSHOT.jar
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +25,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Build Project
-        run: mvn clean package
+        run: cd /${{matrix.config.project-folder-name}} && mvn clean package
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -31,4 +33,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
       - name: Update Lambda Function    
-        run: aws lambda update-function-code --function-name ${{matrix.config.function}} --zip-file fileb://target/${{matrix.config.filename}}
+        run: aws lambda update-function-code --function-name ${{matrix.config.aws-function}} --zip-file fileb://target/${{matrix.config.filename}}
